@@ -1,5 +1,7 @@
-package com.es.core.model.phone;
+package com.es.core.dao;
 
+import com.es.core.model.phone.Color;
+import com.es.core.model.phone.Phone;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
@@ -10,7 +12,7 @@ import java.util.*;
 public class PhoneResultSetExtractor implements ResultSetExtractor<List<Phone>> {
     @Override
     public List<Phone> extractData(ResultSet resultSet) throws SQLException, DataAccessException {
-        Map<Long, Phone> phoneMap = new HashMap<>();
+        Map<Long, Phone> phoneMap = new LinkedHashMap<>();
         while (resultSet.next()) {
             Long phoneId = resultSet.getLong("id");
             Phone phone = phoneMap.computeIfAbsent(phoneId, id -> createPhone(id, resultSet));

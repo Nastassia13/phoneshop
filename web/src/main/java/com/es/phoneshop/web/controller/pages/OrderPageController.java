@@ -1,7 +1,6 @@
 package com.es.phoneshop.web.controller.pages;
 
-import com.es.core.order.OrderService;
-import com.es.core.order.OutOfStockException;
+import com.es.core.service.OrderService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -15,12 +14,12 @@ public class OrderPageController {
     private OrderService orderService;
 
     @RequestMapping(method = RequestMethod.GET)
-    public void getOrder() throws OutOfStockException {
+    public void getOrder() {
         orderService.createOrder(null);
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public void placeOrder() throws OutOfStockException {
+    public void placeOrder() {
         orderService.placeOrder(null);
     }
 }
