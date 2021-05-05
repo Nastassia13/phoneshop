@@ -1,19 +1,20 @@
 package com.es.phoneshop.web.controller.pages;
 
-import com.es.core.dao.PhoneDao;
 import com.es.core.model.cart.Cart;
 import com.es.core.model.cart.CartItem;
 import com.es.core.model.phone.Phone;
 import com.es.core.service.CartService;
+import com.es.core.service.PhoneService;
 import com.es.core.validator.CartForm;
-import com.es.core.validator.CartValidator;
+import com.es.core.validator.CartFormValidator;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,9 +25,14 @@ public class CartPageController {
     @Resource
     private CartService cartService;
     @Resource
-    private PhoneDao phoneDao;
+    private PhoneService phoneService;
     @Resource
-    private CartValidator validator;
+    private CartFormValidator validator;
+
+    @InitBinder("cartForm")
+    public void initBinder(WebDataBinder binder) {
+        binder.setValidator(validator);
+    }
 
     @RequestMapping(method = RequestMethod.GET)
     public String getCart(Model model) {
@@ -37,12 +43,8 @@ public class CartPageController {
     }
 
     @RequestMapping(method = RequestMethod.PUT)
-    public String updateCart(CartForm cartForm, BindingResult bindingResult, Model model) {
-        validator.validate(cartForm, bindingResult);
-        if (bindingResult.hasErrors()) {
-            List<ObjectError> allErrors = bindingResult.getAllErrors();
-            model.addAttribute("errors", allErrors);
-        } else {
+    public String updateCart(@Valid @ModelAttribute CartForm cartForm, BindingResult bindingResult, Model model) {
+        if (!bindingResult.hasErrors()) {
             cartService.update(convertCartForm(cartForm));
         }
         model.addAttribute("cart", cartService.getCart());
@@ -72,7 +74,7 @@ public class CartPageController {
     private List<CartItem> convertCartForm(CartForm cartForm) {
         List<CartItem> cartItems = new ArrayList<>();
         for (int i = 0; i < cartForm.getPhoneIds().size(); i++) {
-            Phone phone = phoneDao.get(Long.parseLong(cartForm.getPhoneIds().get(i))).get();
+            Phone phone = phoneService.getPhone(Long.parseLong(cartForm.getPhoneIds().get(i))).get();
             CartItem cartItem = new CartItem(phone, Long.parseLong(cartForm.getQuantities().get(i)));
             cartItems.add(cartItem);
         }

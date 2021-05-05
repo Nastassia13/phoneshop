@@ -14,11 +14,14 @@ import javax.annotation.Resource;
 import java.util.stream.Collectors;
 
 @Component
-public class CartItemValidator implements Validator {
+public class CartItemFormValidator implements Validator {
     @Resource
     private PhoneDao phoneDao;
     @Resource
     private CartService cartService;
+    private static final String QUANTITY_IS_NEGATIVE = "quantity.negative";
+    private static final String QUANTITY_IS_STRING = "quantity.string";
+    private static final String QUANTITY_OVER_STOCK = "quantity.stock";
 
     @Override
     public boolean supports(Class<?> aClass) {
@@ -31,16 +34,14 @@ public class CartItemValidator implements Validator {
         long quantity;
         try {
             quantity = Long.parseLong(cartItemForm.getQuantity());
+            if (quantity <= 0) {
+                errors.rejectValue("quantity", QUANTITY_IS_NEGATIVE, "Enter number more than 0.");
+            }
+            Long phoneId = Long.parseLong(cartItemForm.getPhoneId());
+            checkStock(phoneId, quantity, findQuantityInCart(phoneId), errors);
         } catch (NumberFormatException e) {
-            errors.reject("Enter integer number");
-            return;
+            errors.rejectValue("quantity", QUANTITY_IS_STRING, "Enter integer number.");
         }
-        if (quantity <= 0) {
-            errors.reject("Enter number more than 0");
-            return;
-        }
-        Long phoneId = Long.parseLong(cartItemForm.getPhoneId());
-        checkStock(phoneId, quantity, findQuantityInCart(phoneId), errors);
     }
 
     private Long findQuantityInCart(Long phoneId) {
@@ -57,7 +58,7 @@ public class CartItemValidator implements Validator {
         phoneDao.get(phoneId).ifPresent(phone -> {
             Stock stock = phoneDao.findStock(phone);
             if (stock.getStock() < quantity + quantityInCart) {
-                errors.reject("Out of stock. Available: " + (stock.getStock() - quantityInCart));
+                errors.rejectValue("quantity", QUANTITY_OVER_STOCK, "Out of stock. Available: " + (stock.getStock() - quantityInCart) + ".");
             }
         });
     }

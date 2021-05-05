@@ -1,9 +1,9 @@
 package com.es.phoneshop.web.controller.pages;
 
-import com.es.core.dao.PhoneDao;
 import com.es.core.exception.PhoneNotFoundException;
 import com.es.core.model.phone.Phone;
 import com.es.core.service.CartService;
+import com.es.core.service.PhoneService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,13 +17,13 @@ import java.util.Optional;
 @RequestMapping(value = "/productDetails/{productId}")
 public class ProductDetailsPageController {
     @Resource
-    private PhoneDao phoneDao;
+    private PhoneService phoneService;
     @Resource
     private CartService cartService;
 
     @RequestMapping(method = RequestMethod.GET)
     public String showProductInfo(@PathVariable Long productId, Model model) {
-        Optional<Phone> optionalPhone = phoneDao.get(productId);
+        Optional<Phone> optionalPhone = phoneService.getPhone(productId);
         if (!optionalPhone.isPresent()) {
             throw new PhoneNotFoundException(productId);
         }

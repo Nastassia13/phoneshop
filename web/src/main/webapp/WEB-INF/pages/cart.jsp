@@ -9,7 +9,7 @@
        style="margin-top: 20px">
         Back to product list
     </a>
-    <form:form method="put">
+    <form:form method="put" commandName="cartForm">
         <table class="table table-striped table-bordered" style="margin-top: 20px">
             <thead class="table-dark">
             <tr>
@@ -35,15 +35,12 @@
                     <td>${item.phone.displaySizeInches}''</td>
                     <td>${item.phone.price} $</td>
                     <td style="width: 15%">
-                        <c:set var="error" value="${errors[item.phone.id]}"/>
-                            ${errors[item.phone.id]}
-                        <input name="quantities" class="form-control" value="${cartForm.quantities[status.index]}"/>
+                        <form:input name="quantities" class="form-control" value="${cartForm.quantities[status.index]}"
+                                    path="quantities[${status.index}]"/>
                         <input name="phoneIds" type="hidden" value="${item.phone.id}"/>
-                        <c:forEach var="error" items="${errors}">
-                            <c:if test="${error.code eq item.phone.id}">
-                                <div class="alert alert-danger" style="margin-top: 10px">${error.defaultMessage}</div>
-                            </c:if>
-                        </c:forEach>
+                        <div class="alert-danger" style="margin-top: 10px">
+                            <form:errors path="quantities[${status.index}]"/>
+                        </div>
                     </td>
                     <td>
                         <button name="phoneId" value="${item.phone.id}" class="btn btn-outline-dark"

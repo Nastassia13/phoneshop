@@ -3,14 +3,12 @@ package com.es.core.dao.impl;
 import com.es.core.dao.PhoneDao;
 import com.es.core.dao.PhoneResultSetExtractor;
 import com.es.core.dao.StockRowMapper;
-import com.es.core.exception.ArgumentIsNullException;
 import com.es.core.model.phone.*;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -25,6 +23,10 @@ public class JdbcPhoneDao implements PhoneDao {
 
     @Resource
     private JdbcTemplate jdbcTemplate;
+    @Resource
+    private SimpleJdbcInsert jdbcInsertPhone;
+    @Resource
+    private SimpleJdbcInsert jdbcInsertPhone2Color;
 
     @Override
     public Optional<Phone> get(final Long key) {
@@ -72,13 +74,13 @@ public class JdbcPhoneDao implements PhoneDao {
 
     private void checkParameters(Phone phone) {
         if (phone == null) {
-            throw new ArgumentIsNullException("Phone is null!");
+            throw new IllegalArgumentException("Phone is null!");
         }
         if (phone.getBrand() == null) {
-            throw new ArgumentIsNullException("Brand is null!");
+            throw new IllegalArgumentException("Brand is null!");
         }
         if (phone.getModel() == null) {
-            throw new ArgumentIsNullException("Model is null!");
+            throw new IllegalArgumentException("Model is null!");
         }
     }
 
@@ -89,30 +91,14 @@ public class JdbcPhoneDao implements PhoneDao {
     }
 
     private void insertPhone(Phone phone) {
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("phones")
-                .usingGeneratedKeyColumns("id");
+        jdbcInsertPhone.withTableName("phones").usingGeneratedKeyColumns("id");
         Map<String, Object> parameters = convertPhoneToMap(phone);
-        Long phoneId = jdbcInsert.executeAndReturnKey(parameters).longValue();
+        Long phoneId = jdbcInsertPhone.executeAndReturnKey(parameters).longValue();
         insertColors(phoneId, phone.getColors());
     }
 
-    private Map<String, Object> convertPhoneToMap(Phone phone) {
-        Map<String, Object> map = new HashMap<>();
-        Field[] fields = phone.getClass().getDeclaredFields();
-        Arrays.stream(fields).forEach(field -> {
-            field.setAccessible(true);
-            try {
-                map.put(field.getName(), field.get(phone));
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        });
-        return map;
-    }
-
     private void insertColors(Long phoneId, Set<Color> colors) {
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName("phone2color");
+        jdbcInsertPhone2Color.withTableName("phone2color");
         List<Long> colorIds = colors.stream()
                 .map(Color::getId)
                 .collect(Collectors.toList());
@@ -120,7 +106,7 @@ public class JdbcPhoneDao implements PhoneDao {
         parameters.put("phoneId", phoneId);
         for (Long colorId : colorIds) {
             parameters.put("colorId", colorId);
-            jdbcInsert.execute(parameters);
+            jdbcInsertPhone2Color.execute(parameters);
         }
     }
 
