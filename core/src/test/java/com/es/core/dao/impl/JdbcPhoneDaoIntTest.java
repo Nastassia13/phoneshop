@@ -1,6 +1,5 @@
 package com.es.core.dao.impl;
 
-import com.es.core.exception.ArgumentIsNullException;
 import com.es.core.model.phone.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -135,13 +134,13 @@ public class JdbcPhoneDaoIntTest {
         assertTrue(colorIds.contains(colorIdSecond));
     }
 
-    @Test(expected = ArgumentIsNullException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testSavePhoneNull() {
         Phone phone = null;
         phoneDao.save(phone);
     }
 
-    @Test(expected = ArgumentIsNullException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testSavePhoneWithNullBrandOrModel() {
         Phone phone = new Phone();
         phoneDao.save(phone);

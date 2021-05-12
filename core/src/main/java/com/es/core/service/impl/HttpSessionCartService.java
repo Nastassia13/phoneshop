@@ -27,13 +27,16 @@ public class HttpSessionCartService implements CartService {
     }
 
     @Override
-    public void addPhone(CartItem item) {
-        int index = findIndexById(item.getPhoneId());
-        if (index == -1) {
-            cart.getItems().add(item);
+    public void addPhone(CartItem cartItem) {
+        Optional<CartItem> optionalCartItem = cart.getItems().stream()
+                .filter(item -> item.getPhone().getId().equals(cartItem.getPhone().getId()))
+                .findAny();
+        if (!optionalCartItem.isPresent()) {
+            cart.getItems().add(cartItem);
         } else {
-            long quantityInCart = cart.getItems().get(index).getQuantity();
-            cart.getItems().set(index, new CartItem(item.getPhoneId(), item.getQuantity() + quantityInCart));
+            long quantityInCart = optionalCartItem.get().getQuantity();
+            int index = findIndexById(cartItem.getPhone().getId());
+            cart.getItems().set(index, new CartItem(cartItem.getPhone(), cartItem.getQuantity() + quantityInCart));
         }
         recalculateCart();
     }
@@ -41,7 +44,7 @@ public class HttpSessionCartService implements CartService {
     @Override
     public void update(List<CartItem> items) {
         for (CartItem item : items) {
-            int index = findIndexById(item.getPhoneId());
+            int index = findIndexById(item.getPhone().getId());
             cart.getItems().set(index, item);
         }
         recalculateCart();
@@ -49,7 +52,10 @@ public class HttpSessionCartService implements CartService {
 
     @Override
     public void remove(Long phoneId) {
-        cart.getItems().remove(findIndexById(phoneId));
+        CartItem cartItem = cart.getItems().stream().filter(item -> item.getPhone().getId().equals(phoneId))
+                .findAny()
+                .get();
+        cart.getItems().remove(cartItem);
         recalculateCart();
     }
 
@@ -60,18 +66,21 @@ public class HttpSessionCartService implements CartService {
     }
 
     private int findIndexById(Long phoneId) {
-        return cart.getItems().stream()
-                .map(CartItem::getPhoneId)
+        return cart.getItems().stream().map(CartItem::getPhone)
+                .map(Phone::getId)
                 .collect(Collectors.toList())
                 .indexOf(phoneId);
     }
 
     private void recalculateCart() {
-        cart.setTotalQuantity(cart.getItems().stream().mapToLong(CartItem::getQuantity).sum());
         cart.setTotalCost(cart.getItems().stream().map(item -> {
-            Optional<Phone> phone = phoneDao.get(item.getPhoneId());
-            phone.orElseThrow(PhoneNotFoundException::new);
+            Optional<Phone> phone = phoneDao.get(item.getPhone().getId());
+            if (!phone.isPresent()) {
+                remove(item.getPhone().getId());
+                return BigDecimal.ZERO;
+            }
             return phone.get().getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
         }).reduce(BigDecimal.ZERO, BigDecimal::add));
+        cart.setTotalQuantity(cart.getItems().stream().mapToLong(CartItem::getQuantity).sum());
     }
 }

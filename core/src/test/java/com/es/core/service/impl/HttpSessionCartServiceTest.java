@@ -1,7 +1,9 @@
 package com.es.core.service.impl;
 
+import com.es.core.dao.PhoneDao;
 import com.es.core.model.cart.Cart;
 import com.es.core.model.cart.CartItem;
+import com.es.core.model.phone.Phone;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,13 +27,15 @@ public class HttpSessionCartServiceTest {
     @Resource
     private Cart cart;
     @Resource
+    private PhoneDao phoneDao;
+    @Resource
     private HttpSessionCartService service;
     private Long quantityInCart = 5L;
 
     @Before
     public void init() {
-        Long phoneId = 1002L;
-        service.addPhone(new CartItem(phoneId, quantityInCart));
+        Phone phone = phoneDao.get(1002L).get();
+        service.addPhone(new CartItem(phone, quantityInCart));
     }
 
     @After
@@ -48,10 +52,11 @@ public class HttpSessionCartServiceTest {
     public void testAddNotExist() {
         Long phoneId = 1001L;
         Long quantity = 3L;
-        service.addPhone(new CartItem(phoneId, quantity));
+        Phone phone = phoneDao.get(phoneId).get();
+        service.addPhone(new CartItem(phone, quantity));
         Long addedQuantity = findQuantityInCart(phoneId);
         assertEquals(quantity, addedQuantity);
-        assertEquals(quantity+quantityInCart, cart.getTotalQuantity());
+        assertEquals(quantity + quantityInCart, cart.getTotalQuantity());
         assertEquals(2080, cart.getTotalCost().longValue());
     }
 
@@ -59,19 +64,20 @@ public class HttpSessionCartServiceTest {
     public void testAddExist() {
         Long phoneId = 1002L;
         Long quantity = 3L;
-        service.addPhone(new CartItem(phoneId, quantity));
+        Phone phone = phoneDao.get(phoneId).get();
+        service.addPhone(new CartItem(phone, quantity));
         Long addedQuantity = findQuantityInCart(phoneId);
-        assertEquals(quantity+quantityInCart, addedQuantity.longValue());
+        assertEquals(quantity + quantityInCart, addedQuantity.longValue());
         assertEquals(8, cart.getTotalQuantity());
         assertEquals(1600, cart.getTotalCost().longValue());
     }
 
     @Test
     public void testUpdate() {
-        service.addPhone(new CartItem(1003L, 7L));
+        service.addPhone(new CartItem(phoneDao.get(1003L).get(), 7L));
         List<CartItem> items = new ArrayList<>(Arrays.asList(
-                new CartItem(1002L, 3L),
-                new CartItem(1003L, 2L)));
+                new CartItem(phoneDao.get(1002L).get(), 3L),
+                new CartItem(phoneDao.get(1003L).get(), 2L)));
         service.update(items);
         assertEquals(2, cart.getItems().size());
         assertEquals(5, cart.getTotalQuantity());
@@ -82,7 +88,7 @@ public class HttpSessionCartServiceTest {
     public void testRemove() {
         Long productId = 1002L;
         service.remove(productId);
-        assertFalse(cart.getItems().stream().map(CartItem::getPhoneId)
+        assertFalse(cart.getItems().stream().map(CartItem::getPhone)
                 .collect(Collectors.toList())
                 .contains(productId));
         assertEquals(0, cart.getTotalQuantity());
@@ -99,7 +105,7 @@ public class HttpSessionCartServiceTest {
 
     private Long findQuantityInCart(Long phoneId) {
         return cart.getItems().stream()
-                .filter(item -> item.getPhoneId().equals(phoneId))
+                .filter(item -> item.getPhone().getId().equals(phoneId))
                 .findAny()
                 .get()
                 .getQuantity();

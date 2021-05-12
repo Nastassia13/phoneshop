@@ -63,7 +63,7 @@
     <jsp:doBody/>
 </main>
 <footer>
-    <p>(c) Expert-Soft</p>
+    <p style="margin-top: 30px">(c) Expert-Soft</p>
 </footer>
 </body>
 </html>

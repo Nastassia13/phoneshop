@@ -1,16 +1,18 @@
 package com.es.core.model.cart;
 
+import com.es.core.model.phone.Phone;
+
 public class CartItem {
-    private Long phoneId;
+    private Phone phone;
     private long quantity;
 
-    public CartItem(Long phoneId, long quantity) {
-        this.phoneId = phoneId;
+    public CartItem(Phone phone, long quantity) {
+        this.phone = phone;
         this.quantity = quantity;
     }
 
-    public Long getPhoneId() {
-        return phoneId;
+    public Phone getPhone() {
+        return phone;
     }
 
     public long getQuantity() {

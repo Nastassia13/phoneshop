@@ -1,9 +1,11 @@
 package com.es.phoneshop.web.controller;
 
 import com.es.core.model.cart.CartItem;
+import com.es.core.model.phone.Phone;
 import com.es.core.service.CartService;
+import com.es.core.service.PhoneService;
 import com.es.core.validator.CartItemForm;
-import com.es.core.validator.CartItemValidator;
+import com.es.core.validator.CartItemFormValidator;
 import com.es.phoneshop.web.controller.dto.AddingCartDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -20,11 +22,13 @@ public class AjaxCartController {
     @Resource
     private CartService cartService;
     @Resource
-    private CartItemValidator validator;
+    private PhoneService phoneService;
+    @Resource
+    private CartItemFormValidator validator;
     private static final String ADDED_TO_CART = "Added to cart successfully";
 
     @InitBinder
-    protected void initBinder(WebDataBinder binder) {
+    public void initBinder(WebDataBinder binder) {
         binder.setValidator(validator);
     }
 
@@ -34,9 +38,12 @@ public class AjaxCartController {
     public AddingCartDto addPhone(@Valid CartItemForm cartItemForm, BindingResult bindingResult) {
         AddingCartDto dto = new AddingCartDto();
         if (bindingResult.hasErrors()) {
-            dto.setMessage(bindingResult.getAllErrors().get(0).getCode());
+            StringBuilder stringBuilder = new StringBuilder();
+            bindingResult.getAllErrors().forEach(error -> stringBuilder.append(error.getDefaultMessage()));
+            dto.setMessage(stringBuilder.toString());
         } else {
-            CartItem cartItem = new CartItem(Long.parseLong(cartItemForm.getPhoneId()), Long.parseLong(cartItemForm.getQuantity()));
+            Phone phone = phoneService.getPhone(Long.parseLong(cartItemForm.getPhoneId())).get();
+            CartItem cartItem = new CartItem(phone, Long.parseLong(cartItemForm.getQuantity()));
             cartService.addPhone(cartItem);
             setDtoSuccess(dto);
         }
