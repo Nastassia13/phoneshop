@@ -1,27 +1,22 @@
 package com.es.core.model.order;
 
+import com.es.core.model.cart.CartItem;
+
 import java.math.BigDecimal;
 import java.util.List;
 
-public class Order
-{
+public class Order {
     private Long id;
-    private List<OrderItem> orderItems;
-    /**
-     *  A sum of order item prices;
-     */
+    private String secureId;
+    private List<CartItem> items;
     private BigDecimal subtotal;
     private BigDecimal deliveryPrice;
-    /**
-     * <code>subtotal</code> + <code>deliveryPrice</code>
-     */
     private BigDecimal totalPrice;
-
     private String firstName;
     private String lastName;
     private String deliveryAddress;
     private String contactPhoneNo;
-
+    private String additionalInformation;
     private OrderStatus status;
 
     public Long getId() {
@@ -32,12 +27,20 @@ public class Order
         this.id = id;
     }
 
-    public List<OrderItem> getOrderItems() {
-        return orderItems;
+    public String getSecureId() {
+        return secureId;
     }
 
-    public void setOrderItems(List<OrderItem> orderItems) {
-        this.orderItems = orderItems;
+    public void setSecureId(String secureId) {
+        this.secureId = secureId;
+    }
+
+    public List<CartItem> getItems() {
+        return items;
+    }
+
+    public void setItems(List<CartItem> items) {
+        this.items = items;
     }
 
     public BigDecimal getSubtotal() {
@@ -102,5 +105,13 @@ public class Order
 
     public void setStatus(OrderStatus status) {
         this.status = status;
+    }
+
+    public String getAdditionalInformation() {
+        return additionalInformation;
+    }
+
+    public void setAdditionalInformation(String additionalInformation) {
+        this.additionalInformation = additionalInformation;
     }
 }

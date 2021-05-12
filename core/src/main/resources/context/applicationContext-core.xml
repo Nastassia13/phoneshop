@@ -28,6 +28,17 @@
         <constructor-arg name="jdbcTemplate" ref="jdbcTemplate"/>
     </bean>
 
+    <bean id="jdbcInsertOrder" class="org.springframework.jdbc.core.simple.SimpleJdbcInsert">
+        <constructor-arg name="jdbcTemplate" ref="jdbcTemplate"/>
+        <property name="tableName" value="orders"/>
+        <property name="generatedKeyName" value="id"/>
+    </bean>
+
+    <bean id="jdbcInsertPhone2Order" class="org.springframework.jdbc.core.simple.SimpleJdbcInsert">
+        <constructor-arg name="jdbcTemplate" ref="jdbcTemplate"/>
+        <property name="tableName" value="phone2order"/>
+    </bean>
+
     <jdbc:initialize-database enabled="${db.insertSchema}" data-source="dataSource">
         <jdbc:script location="classpath:db/schema.sql"/>
     </jdbc:initialize-database>

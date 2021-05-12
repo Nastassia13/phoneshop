@@ -51,16 +51,18 @@
             </c:forEach>
             </tbody>
         </table>
-        <div class="row">
-            <div class="col-11">
-                <button class="btn btn-dark float-end">Update</button>
+        <c:if test="${not empty cart.items}">
+            <div class="row">
+                <div class="col-11">
+                    <button class="btn btn-dark float-end">Update</button>
+                </div>
+                <div class="col">
+                    <a href="${pageContext.servletContext.contextPath}/order" class="btn btn-dark">
+                        Order
+                    </a>
+                </div>
             </div>
-            <div class="col">
-                <a href="${pageContext.servletContext.contextPath}/productList" class="btn btn-dark">
-                    Order
-                </a>
-            </div>
-        </div>
+        </c:if>
     </form:form>
     <form:form id="updateCart" method="post"/>
     <form:form id="deleteCartItem" method="delete"/>

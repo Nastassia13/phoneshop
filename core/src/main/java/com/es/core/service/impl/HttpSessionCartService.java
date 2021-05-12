@@ -1,7 +1,6 @@
 package com.es.core.service.impl;
 
 import com.es.core.dao.PhoneDao;
-import com.es.core.exception.PhoneNotFoundException;
 import com.es.core.model.cart.Cart;
 import com.es.core.model.cart.CartItem;
 import com.es.core.model.phone.Phone;

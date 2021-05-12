@@ -345,6 +345,27 @@ public class JdbcPhoneDaoIntTest {
         assertEquals(0, stock.getReserved().intValue());
     }
 
+    @Test
+    public void updateStock() {
+        Phone phone = new Phone();
+        phone.setId(1001L);
+        phoneDao.updateStock(phone.getId(), 5L);
+        assertEquals(5L, phoneDao.findStock(phone).getStock().longValue());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void updateStockNullPhoneId() {
+        Phone phone = new Phone();
+        phoneDao.updateStock(phone.getId(), 5L);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void updateStockNullQuantity() {
+        Phone phone = new Phone();
+        phone.setId(1001L);
+        phoneDao.updateStock(phone.getId(), null);
+    }
+
     private Phone createPhone() {
         Phone phone = new Phone();
         String brand = "ARCHOS";

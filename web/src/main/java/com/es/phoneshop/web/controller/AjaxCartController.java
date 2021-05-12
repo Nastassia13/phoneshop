@@ -4,7 +4,7 @@ import com.es.core.model.cart.CartItem;
 import com.es.core.model.phone.Phone;
 import com.es.core.service.CartService;
 import com.es.core.service.PhoneService;
-import com.es.core.validator.CartItemForm;
+import com.es.core.forms.CartItemForm;
 import com.es.core.validator.CartItemFormValidator;
 import com.es.phoneshop.web.controller.dto.AddingCartDto;
 import org.springframework.http.HttpStatus;

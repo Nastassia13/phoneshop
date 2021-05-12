@@ -14,8 +14,8 @@ public class StockRowMapper implements RowMapper<Stock> {
         Phone phone = new Phone();
         phone.setId(resultSet.getLong("phoneId"));
         stock.setPhone(phone);
-        stock.setStock(resultSet.getInt("stock"));
-        stock.setReserved(resultSet.getInt("reserved"));
+        stock.setStock(resultSet.getLong("stock"));
+        stock.setReserved(resultSet.getLong("reserved"));
         return stock;
     }
 }
