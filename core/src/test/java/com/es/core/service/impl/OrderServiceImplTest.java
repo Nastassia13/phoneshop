@@ -30,7 +30,7 @@ public class OrderServiceImplTest {
     @Test
     public void getOrderTest() {
         String secureId = "l123";
-        assertEquals(1L, orderService.getOrder(secureId).getId().longValue());
+        assertEquals(1L, orderService.getOrder(secureId).get().getId().longValue());
     }
 
     @Test

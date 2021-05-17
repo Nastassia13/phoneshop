@@ -13,18 +13,18 @@ import javax.annotation.Resource;
 import java.util.Optional;
 
 @Controller
-@RequestMapping(value = "/orderOverview/{secureId}")
-public class OrderOverviewPageController {
+@RequestMapping(value = "/admin/orders/{orderId}")
+public class AdminOrderOverviewPageController {
     @Resource
     private OrderService orderService;
 
     @RequestMapping(method = RequestMethod.GET)
-    public String getOrder(@PathVariable String secureId, Model model) {
-        Optional<Order> optionalOrder = orderService.getOrder(secureId);
+    public String showOrder(@PathVariable Long orderId, Model model) {
+        Optional<Order> optionalOrder = orderService.getOrderById(orderId);
         if (!optionalOrder.isPresent()) {
-            throw new OrderNotFoundException(secureId);
+            throw new OrderNotFoundException(orderId);
         }
         model.addAttribute("order", optionalOrder.get());
-        return "orderOverview";
+        return "adminOrderOverview";
     }
 }

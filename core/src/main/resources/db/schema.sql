@@ -73,6 +73,7 @@ create table orders
     contactPhoneNo        VARCHAR(50) NOT NULL,
     additionalInformation VARCHAR(4096),
     status                VARCHAR(50) NOT NULL,
+    orderDate             TIMESTAMP   NOT NULL,
     UNIQUE (secureId)
 );
 

@@ -30,7 +30,7 @@ public class JdbcOrderDaoIntTest {
 
     @Test
     public void testGetOrder() {
-        Order order = orderDao.getOrder("l123");
+        Order order = orderDao.getOrder("l123").get();
         assertNotNull(order);
         assertEquals(1L, order.getId().longValue());
         assertTrue(order.getItems().size() != 0);
@@ -38,15 +38,15 @@ public class JdbcOrderDaoIntTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetOrderNullSecureId() {
-        Order order = orderDao.getOrder(null);
+        Order order = orderDao.getOrder(null).get();
     }
 
     @Test
     public void testSaveOrder() {
         Order order = createOrder();
         orderDao.save(order);
-        assertEquals(2L, orderDao.getOrder("f567").getId().longValue());
-        assertNotNull(orderDao.getOrder("f567").getSecureId());
+        assertEquals(2L, orderDao.getOrder("f567").get().getId().longValue());
+        assertNotNull(orderDao.getOrder("f567").get().getSecureId());
         List<Long> phones = jdbcTemplate.queryForList(PHONE_BY_ORDER, Long.class, 2L);
         assertEquals(2, phones.size());
     }

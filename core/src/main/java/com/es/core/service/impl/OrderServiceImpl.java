@@ -6,6 +6,7 @@ import com.es.core.exception.OutOfStockException;
 import com.es.core.model.cart.Cart;
 import com.es.core.model.cart.CartItem;
 import com.es.core.model.order.Order;
+import com.es.core.model.order.OrderStatus;
 import com.es.core.model.phone.Stock;
 import com.es.core.service.OrderService;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,7 +15,10 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -30,8 +34,13 @@ public class OrderServiceImpl implements OrderService {
     private BigDecimal deliveryPrice;
 
     @Override
-    public Order getOrder(String secureId) {
+    public Optional<Order> getOrder(String secureId) {
         return orderDao.getOrder(secureId);
+    }
+
+    @Override
+    public Optional<Order> getOrderById(Long id) {
+        return orderDao.getOrderById(id);
     }
 
     @Override
@@ -47,6 +56,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void placeOrder(Order order) {
         order.setSecureId(UUID.randomUUID().toString());
+        order.setOrderDate(LocalDateTime.now());
         orderDao.save(order);
         cartService.clearCart();
         for (CartItem item : order.getItems()) {
@@ -63,5 +73,15 @@ public class OrderServiceImpl implements OrderService {
                 throw new OutOfStockException(item.getPhone(), item.getQuantity(), stock.getStock());
             }
         }
+    }
+
+    @Override
+    public List<Order> findAllOrders() {
+        return orderDao.findAllOrders();
+    }
+
+    @Override
+    public void setStatus(Long orderId, OrderStatus orderStatus) {
+        orderDao.setStatus(orderId, orderStatus);
     }
 }

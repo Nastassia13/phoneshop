@@ -3,6 +3,7 @@ package com.es.core.model.order;
 import com.es.core.model.cart.CartItem;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class Order {
@@ -18,6 +19,7 @@ public class Order {
     private String contactPhoneNo;
     private String additionalInformation;
     private OrderStatus status;
+    private LocalDateTime orderDate;
 
     public Long getId() {
         return id;
@@ -113,5 +115,13 @@ public class Order {
 
     public void setAdditionalInformation(String additionalInformation) {
         this.additionalInformation = additionalInformation;
+    }
+
+    public LocalDateTime getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(LocalDateTime orderDate) {
+        this.orderDate = orderDate;
     }
 }
