@@ -8,10 +8,12 @@ import com.es.core.model.cart.CartItem;
 import com.es.core.model.order.Order;
 import com.es.core.model.order.OrderStatus;
 import com.es.core.model.phone.Stock;
+import com.es.core.service.CartService;
 import com.es.core.service.OrderService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -29,7 +31,7 @@ public class OrderServiceImpl implements OrderService {
     @Resource
     private PhoneDao phoneDao;
     @Resource
-    private HttpSessionCartService cartService;
+    private CartService cartService;
     @Value("${delivery.price}")
     private BigDecimal deliveryPrice;
 

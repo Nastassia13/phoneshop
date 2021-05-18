@@ -13,4 +13,6 @@ public interface PhoneService {
     List<Phone> findAll(int offset, int limit, String query, SortField sortField, SortOrder sortOrder);
 
     int countPages(int limit, String query);
+
+    void updateStock(Long phoneId, Long quantity);
 }

@@ -13,6 +13,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,9 +28,10 @@ public class JdbcOrderDaoIntTest {
     @Resource
     private JdbcTemplate jdbcTemplate;
     private static final String PHONE_BY_ORDER = "select phoneId from phone2order where orderId = ?";
+    private String orderSecureId = "f567";
 
     @Test
-    public void testGetOrder() {
+    public void testGetOrderTest() {
         Order order = orderDao.getOrder("l123").get();
         assertNotNull(order);
         assertEquals(1L, order.getId().longValue());
@@ -37,56 +39,94 @@ public class JdbcOrderDaoIntTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testGetOrderNullSecureId() {
+    public void testGetOrderNullSecureIdTest() {
         Order order = orderDao.getOrder(null).get();
     }
 
     @Test
-    public void testSaveOrder() {
+    public void testGetOrderByIdTest() {
+        Order order = orderDao.getOrderById(1L).get();
+        assertNotNull(order);
+        assertEquals(1L, order.getId().longValue());
+        assertTrue(order.getItems().size() != 0);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetOrderByIdNullSecureIdTest() {
+        Order order = orderDao.getOrderById(null).get();
+    }
+
+    @Test
+    public void testSaveOrderTest() {
         Order order = createOrder();
         orderDao.save(order);
-        assertEquals(2L, orderDao.getOrder("f567").get().getId().longValue());
-        assertNotNull(orderDao.getOrder("f567").get().getSecureId());
-        List<Long> phones = jdbcTemplate.queryForList(PHONE_BY_ORDER, Long.class, 2L);
+        assertEquals(4L, orderDao.getOrder(orderSecureId).get().getId().longValue());
+        assertNotNull(orderDao.getOrder(orderSecureId).get().getSecureId());
+        List<Long> phones = jdbcTemplate.queryForList(PHONE_BY_ORDER, Long.class, 4L);
         assertEquals(2, phones.size());
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testSaveOrderNullOrder() {
+    public void testSaveOrderNullOrderTest() {
         orderDao.save(null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testSaveOrderNullFirstName() {
+    public void testSaveOrderNullFirstNameTest() {
         Order order = createOrder();
         order.setFirstName(null);
         orderDao.save(order);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testSaveOrderNullLastName() {
+    public void testSaveOrderNullLastNameTest() {
         Order order = createOrder();
         order.setLastName(null);
         orderDao.save(order);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testSaveOrderNullPhone() {
+    public void testSaveOrderNullPhoneTest() {
         Order order = createOrder();
         order.setContactPhoneNo(null);
         orderDao.save(order);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testSaveOrderNullAddress() {
+    public void testSaveOrderNullAddressTest() {
         Order order = createOrder();
         order.setDeliveryAddress(null);
         orderDao.save(order);
     }
 
+    @Test
+    public void findAllOrdersTest() {
+        List<Order> orders = orderDao.findAllOrders();
+        assertNotNull(orders);
+        assertEquals(3, orders.size());
+        orders.forEach(order -> assertTrue(order.getItems().size() != 0));
+    }
+
+    @Test
+    public void setStatusTest() {
+        orderDao.setStatus(1L, OrderStatus.DELIVERED);
+        Order order = orderDao.getOrderById(1L).get();
+        assertEquals(OrderStatus.DELIVERED.toString(), order.getStatus().toString());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void setStatusOrderIdNullTest() {
+        orderDao.setStatus(null, OrderStatus.DELIVERED);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void setStatusOrderStatusNullTest() {
+        orderDao.setStatus(1L, null);
+    }
+
     private Order createOrder() {
         Order order = new Order();
-        order.setSecureId("f567");
+        order.setSecureId(orderSecureId);
         order.setSubtotal(BigDecimal.valueOf(300));
         order.setDeliveryPrice(BigDecimal.valueOf(50));
         order.setTotalPrice(BigDecimal.valueOf(350));
@@ -95,6 +135,7 @@ public class JdbcOrderDaoIntTest {
         order.setDeliveryAddress("Minsk");
         order.setContactPhoneNo("58697");
         order.setStatus(OrderStatus.NEW);
+        order.setOrderDate(LocalDateTime.now());
         order.setItems(Arrays.asList(createCartItem(1002L, 5L), createCartItem(1004L, 3L)));
         return order;
     }

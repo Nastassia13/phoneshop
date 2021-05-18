@@ -30,4 +30,9 @@ public class PhoneServiceImpl implements PhoneService {
     public int countPages(int limit, String query) {
         return phoneDao.countPages(limit, query);
     }
+
+    @Override
+    public void updateStock(Long phoneId, Long quantity) {
+        phoneDao.updateStock(phoneId, quantity);
+    }
 }

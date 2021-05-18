@@ -65,7 +65,8 @@ public class OrderPageController {
             orderService.checkStock(order);
         } catch (OutOfStockException e) {
             cartService.remove(e.getPhone().getId());
-            redirectAttributes.addFlashAttribute("stockError", "Out of stock! Product has been removed.");
+            redirectAttributes.addFlashAttribute("stockError", "Out of stock! Product ' " + e.getPhone().getModel()
+                    + "' with quantity " + e.getStockRequested() + " has been removed.");
             check = false;
         }
         return check;

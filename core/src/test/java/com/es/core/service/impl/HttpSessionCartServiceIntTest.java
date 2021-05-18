@@ -23,7 +23,7 @@ import static org.junit.Assert.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:context/applicationContext-core-test.xml")
 @WebAppConfiguration
-public class HttpSessionCartServiceTest {
+public class HttpSessionCartServiceIntTest {
     @Resource
     private Cart cart;
     @Resource
@@ -56,7 +56,7 @@ public class HttpSessionCartServiceTest {
         service.addPhone(new CartItem(phone, quantity));
         Long addedQuantity = findQuantityInCart(phoneId);
         assertEquals(quantity, addedQuantity);
-        assertEquals(quantity + quantityInCart, cart.getTotalQuantity());
+        assertEquals(quantity + quantityInCart, cart.getTotalQuantity().longValue());
         assertEquals(2080, cart.getTotalCost().longValue());
     }
 
@@ -68,7 +68,7 @@ public class HttpSessionCartServiceTest {
         service.addPhone(new CartItem(phone, quantity));
         Long addedQuantity = findQuantityInCart(phoneId);
         assertEquals(quantity + quantityInCart, addedQuantity.longValue());
-        assertEquals(8, cart.getTotalQuantity());
+        assertEquals(8, cart.getTotalQuantity().longValue());
         assertEquals(1600, cart.getTotalCost().longValue());
     }
 
@@ -80,7 +80,7 @@ public class HttpSessionCartServiceTest {
                 new CartItem(phoneDao.get(1003L).get(), 2L)));
         service.update(items);
         assertEquals(2, cart.getItems().size());
-        assertEquals(5, cart.getTotalQuantity());
+        assertEquals(5, cart.getTotalQuantity().longValue());
         assertEquals(1098, cart.getTotalCost().longValue());
     }
 
@@ -89,9 +89,10 @@ public class HttpSessionCartServiceTest {
         Long productId = 1002L;
         service.remove(productId);
         assertFalse(cart.getItems().stream().map(CartItem::getPhone)
+                .map(Phone::getId)
                 .collect(Collectors.toList())
                 .contains(productId));
-        assertEquals(0, cart.getTotalQuantity());
+        assertEquals(0, cart.getTotalQuantity().longValue());
         assertEquals(0, cart.getTotalCost().longValue());
     }
 
@@ -99,7 +100,7 @@ public class HttpSessionCartServiceTest {
     public void testCleanCart() {
         service.clearCart();
         assertTrue(cart.getItems().isEmpty());
-        assertEquals(0, cart.getTotalQuantity());
+        assertEquals(0, cart.getTotalQuantity().longValue());
         assertEquals(0, cart.getTotalCost().longValue());
     }
 

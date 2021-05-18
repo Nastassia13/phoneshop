@@ -12,7 +12,7 @@ import java.util.List;
 @SessionScope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class Cart {
     private List<CartItem> items;
-    private long totalQuantity;
+    private Long totalQuantity;
     private BigDecimal totalCost;
 
     public Cart() {
@@ -28,11 +28,11 @@ public class Cart {
         this.items = items;
     }
 
-    public long getTotalQuantity() {
+    public Long getTotalQuantity() {
         return totalQuantity;
     }
 
-    public void setTotalQuantity(long totalQuantity) {
+    public void setTotalQuantity(Long totalQuantity) {
         this.totalQuantity = totalQuantity;
     }
 

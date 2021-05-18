@@ -70,6 +70,12 @@ public class JdbcOrderDao implements OrderDao {
 
     @Override
     public void setStatus(Long orderId, OrderStatus orderStatus) {
+        if (orderId == null) {
+            throw new IllegalArgumentException("OrderId is null!");
+        }
+        if (orderStatus == null) {
+            throw new IllegalArgumentException("OrderStatus is null!");
+        }
         jdbcTemplate.update(UPDATE_ORDER_STATUS, orderStatus.toString(), orderId);
     }
 
