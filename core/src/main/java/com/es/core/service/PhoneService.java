@@ -3,6 +3,7 @@ package com.es.core.service;
 import com.es.core.model.phone.Phone;
 import com.es.core.model.phone.SortField;
 import com.es.core.model.phone.SortOrder;
+import com.es.core.model.phone.Stock;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,4 +16,6 @@ public interface PhoneService {
     int countPages(int limit, String query);
 
     void updateStock(Long phoneId, Long quantity);
+
+    Stock findStock(Phone phone);
 }

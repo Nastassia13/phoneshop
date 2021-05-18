@@ -33,7 +33,10 @@ public class AjaxAdminController {
     public String setStatusRejected(@PathVariable String orderId) {
         orderService.setStatus(Long.parseLong(orderId), OrderStatus.REJECTED);
         Order order = orderService.getOrderById(Long.parseLong(orderId)).get();
-        order.getItems().forEach(item -> phoneService.updateStock(item.getPhone().getId(), item.getQuantity()));
+        order.getItems().forEach(item -> {
+            Long currentStock = phoneService.findStock(item.getPhone()).getStock();
+            phoneService.updateStock(item.getPhone().getId(), item.getQuantity() + currentStock);
+        });
         return ORDER_REJECTED;
     }
 }
