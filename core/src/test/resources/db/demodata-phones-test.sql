@@ -40,3 +40,10 @@ values (1001, 11, 0),
        (1002, 12, 1),
        (1003, 13, 2),
        (1004, 14, 3);
+
+insert into orders
+values (1, 'l123', 200, 5, 205, 'nnn', 'kkk', 'Minsk', '1234567', null, 'NEW');
+
+insert into phone2order
+values (1, 1001, 2),
+       (1, 1002, 3);

@@ -1,4 +1,4 @@
-package com.es.core.validator;
+package com.es.core.forms;
 
 public class CartItemForm {
     private String phoneId;

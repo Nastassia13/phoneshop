@@ -1,6 +1,7 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ tag trimDirectiveWhitespaces="true" %>
 <%@ attribute name="pageTitle" required="true" %>
-<%@ attribute name="cart" required="true" type="com.es.core.model.cart.Cart" %>
+<%@ attribute name="cart" type="com.es.core.model.cart.Cart" %>
 
 <html>
 <head>
@@ -19,9 +20,11 @@
     <div class="display-1">
         <a style="color: black" class="text-decoration-none"
            href="${pageContext.servletContext.contextPath}/productList">Phonify</a>
-        <a id="cart" href="${pageContext.servletContext.contextPath}/cart" class="btn btn-dark btn-lg float-end"
-           style="margin-top: 25px">
-        </a>
+        <c:if test="${not empty cart}">
+            <a id="cart" href="${pageContext.servletContext.contextPath}/cart" class="btn btn-dark btn-lg float-end"
+               style="margin-top: 25px">
+            </a>
+        </c:if>
     </div>
     <hr style="height: 2px">
 </header>

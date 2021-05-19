@@ -4,6 +4,7 @@ import com.es.core.dao.PhoneDao;
 import com.es.core.dao.PhoneResultSetExtractor;
 import com.es.core.dao.StockRowMapper;
 import com.es.core.model.phone.*;
+import com.es.core.utils.Converter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,7 @@ public class JdbcPhoneDao implements PhoneDao {
     private static final String DELETE_PHONE2COLOR = "delete from phone2color where phoneId = ?";
     private static final String COUNT_PHONES = "select count(*) from phones left join stocks on id = phoneId where stock > 0 and price is not null %s";
     private static final String GET_STOCK = "select * from stocks where phoneId = ?";
+    private static final String UPDATE_STOCK = "update stocks set stock = ? where phoneId = ?";
 
     @Resource
     private JdbcTemplate jdbcTemplate;
@@ -65,11 +67,22 @@ public class JdbcPhoneDao implements PhoneDao {
         Optional<Stock> stock = jdbcTemplate.query(GET_STOCK, new StockRowMapper(), phone.getId()).stream().findAny();
         if (!stock.isPresent()) {
             stock = Optional.of(new Stock());
-            stock.get().setStock(0);
-            stock.get().setReserved(0);
+            stock.get().setStock(0L);
+            stock.get().setReserved(0L);
         }
         stock.get().setPhone(phone);
         return stock.get();
+    }
+
+    @Override
+    public void updateStock(Long phoneId, Long quantity) {
+        if (phoneId == null) {
+            throw new IllegalArgumentException("PhoneId is null!");
+        }
+        if (quantity == null) {
+            throw new IllegalArgumentException("Quantity is null!");
+        }
+        jdbcTemplate.update(UPDATE_STOCK, quantity, phoneId);
     }
 
     private void checkParameters(Phone phone) {
@@ -92,7 +105,7 @@ public class JdbcPhoneDao implements PhoneDao {
 
     private void insertPhone(Phone phone) {
         jdbcInsertPhone.withTableName("phones").usingGeneratedKeyColumns("id");
-        Map<String, Object> parameters = convertPhoneToMap(phone);
+        Map<String, Object> parameters = new Converter().convertObjectToMap(phone);
         Long phoneId = jdbcInsertPhone.executeAndReturnKey(parameters).longValue();
         insertColors(phoneId, phone.getColors());
     }

@@ -5,8 +5,8 @@ import com.es.core.model.phone.SortField;
 import com.es.core.model.phone.SortOrder;
 import com.es.core.model.phone.Stock;
 
-import java.lang.reflect.Field;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 public interface PhoneDao {
     Optional<Phone> get(Long key);
@@ -19,17 +19,5 @@ public interface PhoneDao {
 
     Stock findStock(Phone phone);
 
-    default Map<String, Object> convertPhoneToMap(Phone phone) {
-        Map<String, Object> map = new HashMap<>();
-        Field[] fields = phone.getClass().getDeclaredFields();
-        Arrays.stream(fields).forEach(field -> {
-            field.setAccessible(true);
-            try {
-                map.put(field.getName(), field.get(phone));
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        });
-        return map;
-    }
+    void updateStock(Long phoneId, Long quantity);
 }
