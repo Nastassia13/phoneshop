@@ -73,41 +73,16 @@
     <br>
     <h4 id="messageAdmin"></h4>
     <c:if test="${order.status eq 'NEW'}">
-        <button id="delivered" class="btn btn-dark btn-lg">Delivered</button>
-        <button id="rejected" class="btn btn-dark btn-lg">Rejected</button>
+        <form method="post">
+            <input type="submit" name="status" class="btn btn-dark btn-lg" value="DELIVERED">
+        </form>
+        <form method="post">
+            <input type="submit" name="status" class="btn btn-dark btn-lg" value="REJECTED">
+        </form>
     </c:if><br>
     <a href="${pageContext.servletContext.contextPath}/admin/orders" class="btn btn-dark btn-lg"
        style="margin-top: 20px">
         Back
     </a>
-
-    <script>
-        $(document).ready(function () {
-            $('#delivered').click(function () {
-                $.ajax({
-                    type: 'POST',
-                    url: '${pageContext.servletContext.contextPath}/ajaxAdminDelivered/${orderId}',
-                    success: function (text) {
-                        let message = $('#messageAdmin')
-                        message.html(text)
-                        message.show()
-                        window.location.href = '${pageContext.servletContext.contextPath}/admin/orders/${orderId}'
-                    }
-                })
-            })
-            $('#rejected').click(function () {
-                $.ajax({
-                    type: 'POST',
-                    url: '${pageContext.servletContext.contextPath}/ajaxAdminRejected/${orderId}',
-                    success: function (text) {
-                        let message = $('#messageAdmin')
-                        message.html(text)
-                        message.show()
-                        window.location.href = '${pageContext.servletContext.contextPath}/admin/orders/${orderId}'
-                    }
-                })
-            })
-        })
-    </script>
 </tags:master>
 

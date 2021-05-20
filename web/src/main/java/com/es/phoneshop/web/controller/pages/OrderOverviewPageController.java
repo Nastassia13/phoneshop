@@ -1,7 +1,5 @@
 package com.es.phoneshop.web.controller.pages;
 
-import com.es.core.exception.OrderNotFoundException;
-import com.es.core.model.order.Order;
 import com.es.core.service.OrderService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.annotation.Resource;
-import java.util.Optional;
 
 @Controller
 @RequestMapping(value = "/orderOverview/{secureId}")
@@ -20,11 +17,7 @@ public class OrderOverviewPageController {
 
     @RequestMapping(method = RequestMethod.GET)
     public String getOrder(@PathVariable String secureId, Model model) {
-        Optional<Order> optionalOrder = orderService.getOrder(secureId);
-        if (!optionalOrder.isPresent()) {
-            throw new OrderNotFoundException(secureId);
-        }
-        model.addAttribute("order", optionalOrder.get());
+        model.addAttribute("order", orderService.getOrder(secureId));
         return "orderOverview";
     }
 }

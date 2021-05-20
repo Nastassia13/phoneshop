@@ -32,7 +32,7 @@ public class JdbcOrderDaoIntTest {
 
     @Test
     public void testGetOrderTest() {
-        Order order = orderDao.getOrder("l123").get();
+        Order order = orderDao.getOrder("l123");
         assertNotNull(order);
         assertEquals(1L, order.getId().longValue());
         assertTrue(order.getItems().size() != 0);
@@ -40,12 +40,12 @@ public class JdbcOrderDaoIntTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetOrderNullSecureIdTest() {
-        Order order = orderDao.getOrder(null).get();
+        Order order = orderDao.getOrder(null);
     }
 
     @Test
     public void testGetOrderByIdTest() {
-        Order order = orderDao.getOrderById(1L).get();
+        Order order = orderDao.getOrderById(1L);
         assertNotNull(order);
         assertEquals(1L, order.getId().longValue());
         assertTrue(order.getItems().size() != 0);
@@ -53,15 +53,15 @@ public class JdbcOrderDaoIntTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetOrderByIdNullSecureIdTest() {
-        Order order = orderDao.getOrderById(null).get();
+        Order order = orderDao.getOrderById(null);
     }
 
     @Test
     public void testSaveOrderTest() {
         Order order = createOrder();
         orderDao.save(order);
-        assertEquals(4L, orderDao.getOrder(orderSecureId).get().getId().longValue());
-        assertNotNull(orderDao.getOrder(orderSecureId).get().getSecureId());
+        assertEquals(4L, orderDao.getOrder(orderSecureId).getId().longValue());
+        assertNotNull(orderDao.getOrder(orderSecureId).getSecureId());
         List<Long> phones = jdbcTemplate.queryForList(PHONE_BY_ORDER, Long.class, 4L);
         assertEquals(2, phones.size());
     }
@@ -104,13 +104,12 @@ public class JdbcOrderDaoIntTest {
         List<Order> orders = orderDao.findAllOrders();
         assertNotNull(orders);
         assertEquals(3, orders.size());
-        orders.forEach(order -> assertTrue(order.getItems().size() != 0));
     }
 
     @Test
     public void setStatusTest() {
         orderDao.setStatus(1L, OrderStatus.DELIVERED);
-        Order order = orderDao.getOrderById(1L).get();
+        Order order = orderDao.getOrderById(1L);
         assertEquals(OrderStatus.DELIVERED.toString(), order.getStatus().toString());
     }
 

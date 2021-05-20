@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.math.BigDecimal;
@@ -24,21 +23,6 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class HttpSessionCartServiceUnitTest {
-    @Mock
-    private Cart cart;
-    @Mock
-    private PhoneDao phoneDao;
-    @Mock
-    private Phone phone1;
-    @Mock
-    private Phone phone2;
-    @Mock
-    private Phone phone3;
-    @Mock
-    private Phone phone4;
-
-    private List<CartItem> cartItems;
-
     private static final Long PHONE_ID_1 = 1L;
     private static final Long PHONE_ID_2 = 2L;
     private static final Long PHONE_ID_3 = 3L;
@@ -54,9 +38,23 @@ public class HttpSessionCartServiceUnitTest {
     private static final BigDecimal PRICE_3 = BigDecimal.valueOf(300);
     private static final BigDecimal PRICE_4 = BigDecimal.valueOf(100);
 
+    private List<CartItem> cartItems;
+
+    @Mock
+    private Cart cart;
+    @Mock
+    private PhoneDao phoneDao;
+    @Mock
+    private Phone phone1;
+    @Mock
+    private Phone phone2;
+    @Mock
+    private Phone phone3;
+    @Mock
+    private Phone phone4;
+
     @InjectMocks
-    @Spy
-    private HttpSessionCartService cartService;
+    private HttpSessionCartService cartService = new HttpSessionCartService();
 
     @Before
     public void init() {
@@ -77,7 +75,6 @@ public class HttpSessionCartServiceUnitTest {
                 new CartItem(phone2, QUANTITY_2),
                 new CartItem(phone3, QUANTITY_3)));
         when(cart.getItems()).thenReturn(cartItems);
-        when(cartService.getCart()).thenReturn(cart);
         when(cart.getTotalCost()).thenReturn(BigDecimal.valueOf(2050));
         when(cart.getTotalQuantity()).thenReturn(9L);
     }

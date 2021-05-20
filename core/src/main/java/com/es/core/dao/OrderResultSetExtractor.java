@@ -12,59 +12,30 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-public class OrderResultSetExtractor implements ResultSetExtractor<List<Order>> {
+public class OrderResultSetExtractor implements ResultSetExtractor<Order> {
     @Override
-    public List<Order> extractData(ResultSet resultSet) throws SQLException, DataAccessException {
-        Map<Long, Order> orders = new HashMap<>();
-        Map<Long, Phone> phoneMap = new LinkedHashMap<>();
-        Map<Long, Long> quantityMap = new LinkedHashMap<>();
-        Long prevId = null;
-        while (resultSet.next()) {
-            prevId = doNext(resultSet, orders, phoneMap, quantityMap, prevId);
-        }
-        if (orders.containsKey(prevId)) {
-            orders.get(prevId).setItems(findCartItems(phoneMap, quantityMap));
-        }
-        return new ArrayList<>(orders.values());
-    }
-
-    private Long doNext(ResultSet resultSet, Map<Long, Order> orders, Map<Long, Phone> phoneMap,
-                        Map<Long, Long> quantityMap, Long prevId) throws SQLException {
-        Long orderId = resultSet.getLong("id");
-        checkPrevId(orders, phoneMap, quantityMap, prevId, orderId);
-        Order order = orders.computeIfAbsent(orderId, id -> createOrder(orderId, resultSet));
-        addColorToPhone(resultSet, phoneMap, quantityMap);
-        prevId = order.getId();
-        return prevId;
-    }
-
-    private void checkPrevId(Map<Long, Order> orders, Map<Long, Phone> phoneMap, Map<Long, Long> quantityMap, Long prevId, Long orderId) {
-        if (prevId != null && !prevId.equals(orderId)) {
-            orders.get(prevId).setItems(findCartItems(phoneMap, quantityMap));
-            phoneMap.clear();
-            quantityMap.clear();
-        }
-    }
-
-    private Order createOrder(Long id, ResultSet resultSet) {
+    public Order extractData(ResultSet resultSet) throws SQLException, DataAccessException {
         Order order = new Order();
-        try {
-            order.setId(id);
-            setFieldValues(order, resultSet);
-            order.setItems(new ArrayList<>());
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        Map<Long, CartItem> cartItemMap = new HashMap<>();
+        while (resultSet.next()) {
+            doNext(order, resultSet, cartItemMap);
         }
+        order.setItems(new ArrayList<>(cartItemMap.values()));
         return order;
     }
 
-    private void addColorToPhone(ResultSet resultSet, Map<Long, Phone> phoneMap, Map<Long, Long> quantityMap) throws SQLException {
+    private void doNext(Order order, ResultSet resultSet, Map<Long, CartItem> cartItemMap) throws SQLException {
+        if (order.getId() == null) {
+            setFieldValues(order, resultSet);
+        }
         Long phoneId = resultSet.getLong("phoneId");
-        quantityMap.put(phoneId, resultSet.getLong("quantity"));
-        Phone phone = phoneMap.computeIfAbsent(phoneId, id -> createPhone(id, resultSet));
+        if (!cartItemMap.containsKey(phoneId)) {
+            cartItemMap.put(phoneId,
+                    new CartItem(createPhone(phoneId, resultSet), resultSet.getLong("quantity")));
+        }
         Color color = findColor(resultSet);
         if (color.getCode() != null) {
-            phone.getColors().add(color);
+            cartItemMap.get(phoneId).getPhone().getColors().add(color);
         }
     }
 
@@ -109,6 +80,7 @@ public class OrderResultSetExtractor implements ResultSetExtractor<List<Order>> 
     }
 
     private void setFieldValues(Order order, ResultSet resultSet) throws SQLException, DataAccessException {
+        order.setId(resultSet.getLong("id"));
         order.setSecureId(resultSet.getString("secureId"));
         order.setSubtotal(resultSet.getBigDecimal("subtotal"));
         order.setDeliveryPrice(resultSet.getBigDecimal("deliveryPrice"));
@@ -119,20 +91,11 @@ public class OrderResultSetExtractor implements ResultSetExtractor<List<Order>> 
         order.setContactPhoneNo(resultSet.getString("contactPhoneNo"));
         order.setAdditionalInformation(resultSet.getString("additionalInformation"));
         order.setStatus(OrderStatus.valueOf(resultSet.getString("status")));
-        order.setOrderDate(resultSet.getTimestamp("orderDate").toLocalDateTime());
     }
 
     private Color findColor(ResultSet resultSet) throws SQLException, DataAccessException {
         Long colorId = resultSet.getLong("colorId");
         String colorCode = resultSet.getString("code");
         return new Color(colorId, colorCode);
-    }
-
-    private List<CartItem> findCartItems(Map<Long, Phone> phoneMap, Map<Long, Long> quantityMap) {
-        List<CartItem> cartItems = new ArrayList<>();
-        for (Map.Entry<Long, Phone> entry : phoneMap.entrySet()) {
-            cartItems.add(new CartItem(entry.getValue(), quantityMap.get(entry.getKey())));
-        }
-        return cartItems;
     }
 }

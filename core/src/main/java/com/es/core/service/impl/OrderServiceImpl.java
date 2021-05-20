@@ -13,14 +13,12 @@ import com.es.core.service.OrderService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ReflectionUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -36,12 +34,12 @@ public class OrderServiceImpl implements OrderService {
     private BigDecimal deliveryPrice;
 
     @Override
-    public Optional<Order> getOrder(String secureId) {
+    public Order getOrder(String secureId) {
         return orderDao.getOrder(secureId);
     }
 
     @Override
-    public Optional<Order> getOrderById(Long id) {
+    public Order getOrderById(Long id) {
         return orderDao.getOrderById(id);
     }
 
@@ -84,6 +82,13 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void setStatus(Long orderId, OrderStatus orderStatus) {
+        if (orderStatus == OrderStatus.REJECTED) {
+            Order order = orderDao.getOrderById(orderId);
+            order.getItems().forEach(item -> {
+                Long currentStock = phoneDao.findStock(item.getPhone()).getStock();
+                phoneDao.updateStock(item.getPhone().getId(), item.getQuantity() + currentStock);
+            });
+        }
         orderDao.setStatus(orderId, orderStatus);
     }
 }

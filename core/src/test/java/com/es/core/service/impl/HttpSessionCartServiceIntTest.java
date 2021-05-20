@@ -24,13 +24,13 @@ import static org.junit.Assert.*;
 @ContextConfiguration("classpath:context/applicationContext-core-test.xml")
 @WebAppConfiguration
 public class HttpSessionCartServiceIntTest {
+    private Long quantityInCart = 5L;
     @Resource
     private Cart cart;
     @Resource
     private PhoneDao phoneDao;
     @Resource
     private HttpSessionCartService service;
-    private Long quantityInCart = 5L;
 
     @Before
     public void init() {
