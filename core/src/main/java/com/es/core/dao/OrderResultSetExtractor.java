@@ -16,25 +16,26 @@ public class OrderResultSetExtractor implements ResultSetExtractor<Order> {
     @Override
     public Order extractData(ResultSet resultSet) throws SQLException, DataAccessException {
         Order order = new Order();
-        Map<Long, Phone> phoneMap = new LinkedHashMap<>();
-        Map<Long, Long> quantityMap = new LinkedHashMap<>();
+        Map<Long, CartItem> cartItemMap = new HashMap<>();
         while (resultSet.next()) {
-            doNext(order, resultSet, phoneMap, quantityMap);
+            doNext(order, resultSet, cartItemMap);
         }
-        order.setItems(findCartItems(phoneMap, quantityMap));
+        order.setItems(new ArrayList<>(cartItemMap.values()));
         return order;
     }
 
-    private void doNext(Order order, ResultSet resultSet, Map<Long, Phone> phoneMap, Map<Long, Long> quantityMap) throws SQLException {
+    private void doNext(Order order, ResultSet resultSet, Map<Long, CartItem> cartItemMap) throws SQLException {
         if (order.getId() == null) {
             setFieldValues(order, resultSet);
         }
         Long phoneId = resultSet.getLong("phoneId");
-        quantityMap.put(phoneId, resultSet.getLong("quantity"));
-        Phone phone = phoneMap.computeIfAbsent(phoneId, id -> createPhone(id, resultSet));
+        if (!cartItemMap.containsKey(phoneId)) {
+            cartItemMap.put(phoneId,
+                    new CartItem(createPhone(phoneId, resultSet), resultSet.getLong("quantity")));
+        }
         Color color = findColor(resultSet);
         if (color.getCode() != null) {
-            phone.getColors().add(color);
+            cartItemMap.get(phoneId).getPhone().getColors().add(color);
         }
     }
 
@@ -96,13 +97,5 @@ public class OrderResultSetExtractor implements ResultSetExtractor<Order> {
         Long colorId = resultSet.getLong("colorId");
         String colorCode = resultSet.getString("code");
         return new Color(colorId, colorCode);
-    }
-
-    private List<CartItem> findCartItems(Map<Long, Phone> phoneMap, Map<Long, Long> quantityMap) {
-        List<CartItem> cartItems = new ArrayList<>();
-        for (Map.Entry<Long, Phone> entry : phoneMap.entrySet()) {
-            cartItems.add(new CartItem(entry.getValue(), quantityMap.get(entry.getKey())));
-        }
-        return cartItems;
     }
 }

@@ -4,6 +4,7 @@ import com.es.core.dao.PhoneDao;
 import com.es.core.model.phone.Phone;
 import com.es.core.model.phone.SortField;
 import com.es.core.model.phone.SortOrder;
+import com.es.core.model.phone.Stock;
 import com.es.core.service.PhoneService;
 import org.springframework.stereotype.Service;
 
@@ -29,5 +30,15 @@ public class PhoneServiceImpl implements PhoneService {
     @Override
     public int countPages(int limit, String query) {
         return phoneDao.countPages(limit, query);
+    }
+
+    @Override
+    public void updateStock(Long phoneId, Long quantity) {
+        phoneDao.updateStock(phoneId, quantity);
+    }
+
+    @Override
+    public Stock findStock(Phone phone) {
+        return phoneDao.findStock(phone);
     }
 }

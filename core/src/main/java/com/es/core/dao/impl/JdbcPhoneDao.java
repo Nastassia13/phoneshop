@@ -32,6 +32,9 @@ public class JdbcPhoneDao implements PhoneDao {
 
     @Override
     public Optional<Phone> get(final Long key) {
+        if (key == null) {
+            throw new IllegalArgumentException("Key is null!");
+        }
         return jdbcTemplate.query(PHONE_BY_ID, new PhoneResultSetExtractor(), key).stream().findAny();
     }
 
@@ -64,6 +67,9 @@ public class JdbcPhoneDao implements PhoneDao {
 
     @Override
     public Stock findStock(Phone phone) {
+        if (phone == null) {
+            throw new IllegalArgumentException("Phone is null!");
+        }
         Optional<Stock> stock = jdbcTemplate.query(GET_STOCK, new StockRowMapper(), phone.getId()).stream().findAny();
         if (!stock.isPresent()) {
             stock = Optional.of(new Stock());
