@@ -45,6 +45,10 @@
                style="margin-top: 25px">
             </a>
         </c:if>
+        <a href="${pageContext.servletContext.contextPath}/quickOrder" class="btn btn-dark btn-lg float-end"
+           style="margin-top: 25px; margin-right: 20px">
+            Quick order
+        </a>
     </div>
     <hr style="height: 2px">
 </header>

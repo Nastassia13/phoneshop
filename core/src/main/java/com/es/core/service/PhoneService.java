@@ -11,6 +11,8 @@ import java.util.Optional;
 public interface PhoneService {
     Optional<Phone> getPhone(Long phoneId);
 
+    Optional<Phone> getPhone(String model);
+
     List<Phone> findAll(int offset, int limit, String query, SortField sortField, SortOrder sortOrder);
 
     int countPages(int limit, String query);

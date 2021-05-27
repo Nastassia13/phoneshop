@@ -22,6 +22,7 @@ public class JdbcPhoneDao implements PhoneDao {
     private static final String COUNT_PHONES = "select count(*) from phones left join stocks on id = phoneId where stock > 0 and price is not null %s";
     private static final String GET_STOCK = "select * from stocks where phoneId = ?";
     private static final String UPDATE_STOCK = "update stocks set stock = ? where phoneId = ?";
+    private static final String PHONE_BY_MODEL = "select * from phones p left join phone2color p2c on p.id = p2c.phoneId left join colors c on p2c.colorId = c.id where p.model = ?";
 
     @Resource
     private JdbcTemplate jdbcTemplate;
@@ -36,6 +37,14 @@ public class JdbcPhoneDao implements PhoneDao {
             throw new IllegalArgumentException("Key is null!");
         }
         return jdbcTemplate.query(PHONE_BY_ID, new PhoneResultSetExtractor(), key).stream().findAny();
+    }
+
+    @Override
+    public Optional<Phone> get(String model) {
+        if (model == null) {
+            throw new IllegalArgumentException("Model is null!");
+        }
+        return jdbcTemplate.query(PHONE_BY_MODEL, new PhoneResultSetExtractor(), model).stream().findAny();
     }
 
     @Override

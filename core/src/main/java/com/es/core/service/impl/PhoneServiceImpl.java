@@ -23,6 +23,11 @@ public class PhoneServiceImpl implements PhoneService {
     }
 
     @Override
+    public Optional<Phone> getPhone(String model) {
+        return phoneDao.get(model);
+    }
+
+    @Override
     public List<Phone> findAll(int offset, int limit, String query, SortField sortField, SortOrder sortOrder) {
         return phoneDao.findAll(offset, limit, query, sortField, sortOrder);
     }
