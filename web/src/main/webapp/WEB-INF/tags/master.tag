@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ tag trimDirectiveWhitespaces="true" %>
 <%@ attribute name="pageTitle" required="true" %>
 <%@ attribute name="cart" type="com.es.core.model.cart.Cart" %>
@@ -15,7 +16,26 @@
 
 <body style="margin: 30px">
 <header>
-    <h5><a href="#" class="float-end">Login</a></h5>
+    <sec:authorize access="!isAuthenticated()">
+        <a class="float-end" href="<c:url value="/login"/>">Login</a>
+    </sec:authorize>
+    <sec:authorize access="isAuthenticated()">
+        <div class="row justify-content-end">
+            <div class="col-1">
+                <div class="float-end">
+                    Hello, <c:out value="${pageContext.request.remoteUser}"/>!
+                </div>
+            </div>
+            <div class="col-1">
+                <a class="float-end" href="${pageContext.servletContext.contextPath}/admin/orders">Admin</a>
+            </div>
+            <div class="col-1">
+                <form method="post" action="${pageContext.request.contextPath}/logout">
+                    <a class="float-end" href="<c:url value="/logout"/>">Logout</a>
+                </form>
+            </div>
+        </div>
+    </sec:authorize>
     <br>
     <div class="display-1">
         <a style="color: black" class="text-decoration-none"
