@@ -1,24 +1,30 @@
 package com.es.core.forms;
 
-import java.util.List;
+import com.es.core.constraints.ModelConstraint;
+import com.es.core.constraints.StockConstraint;
 
+import javax.validation.constraints.Min;
+
+@StockConstraint
 public class QuickForm {
-    private List<String> phoneModels;
-    private List<String> quantities;
+    @ModelConstraint
+    private String phoneModel;
+    @Min(value = 1L, message = "Enter number more than 0.")
+    private Long quantity;
 
-    public List<String> getPhoneModels() {
-        return phoneModels;
+    public String getPhoneModel() {
+        return phoneModel;
     }
 
-    public void setPhoneModels(List<String> phoneModels) {
-        this.phoneModels = phoneModels;
+    public void setPhoneModel(String phoneModel) {
+        this.phoneModel = phoneModel;
     }
 
-    public List<String> getQuantities() {
-        return quantities;
+    public Long getQuantity() {
+        return quantity;
     }
 
-    public void setQuantities(List<String> quantities) {
-        this.quantities = quantities;
+    public void setQuantity(Long quantity) {
+        this.quantity = quantity;
     }
 }

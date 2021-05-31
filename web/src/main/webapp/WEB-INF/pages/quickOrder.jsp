@@ -9,7 +9,7 @@
                 ${item} product added to cart successfully
         </div>
     </c:forEach>
-    <form:form method="put" commandName="quickForm">
+    <form:form method="put" commandName="quickFormEntity">
         <table class="table" style="margin-top: 20px">
             <thead class="table-dark">
             <tr>
@@ -21,18 +21,18 @@
                 <tbody>
                 <tr>
                     <td>
-                        <form:input name="phoneModels" class="form-control"
-                                    value="${quickForm.phoneModels[status.index]}"
-                                    path="phoneModels[${status.index}]"/>
+                        <form:input class="form-control"
+                                    path="quickForms[${status.index}].phoneModel"/>
                         <div class="alert-danger" style="margin-top: 10px">
-                            <form:errors path="phoneModels[${status.index}]"/>
+                            <form:errors path="quickForms[${status.index}].phoneModel"/>
                         </div>
                     </td>
                     <td>
-                        <form:input name="quantities" class="form-control" value="${quickForm.quantities[status.index]}"
-                                    path="quantities[${status.index}]"/>
+                        <form:input class="form-control"
+                                    path="quickForms[${status.index}].quantity"/>
                         <div class="alert-danger" style="margin-top: 10px">
-                            <form:errors path="quantities[${status.index}]"/>
+                            <form:errors path="quickForms[${status.index}]"/>
+                            <form:errors path="quickForms[${status.index}].quantity"/>
                         </div>
                     </td>
                 </tr>
